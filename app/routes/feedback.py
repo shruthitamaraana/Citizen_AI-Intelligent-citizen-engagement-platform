@@ -19,7 +19,12 @@ async def submit_feedback(request: Request, feedback_text: str = Form(...)):
         granite_model = request.app.state.granite_model
         
         # Analyze sentiment using Granite model
-        sentiment = await granite_model.analyze_sentiment(feedback_text)
+        # Use fallback if model is not loaded
+        if granite_model.model is None:
+            sentiment = granite_model._enhanced_keyword_sentiment(feedback_text)
+        else:
+            sentiment = await granite_model.analyze_sentiment(feedback_text)
+
         
         # Store feedback
         feedback_entry = {
