@@ -28,6 +28,17 @@ templates = Jinja2Templates(directory="app/templates")
 # Initialize AI model (will be loaded on startup)
 granite_model = None
 
+from fastapi import Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
+templates = Jinja2Templates(directory="app/templates")
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
 # In-memory storage for demo purposes
 app.state.users = {"admin": {"password": "admin123", "role": "admin"}}
 app.state.sessions = {}
