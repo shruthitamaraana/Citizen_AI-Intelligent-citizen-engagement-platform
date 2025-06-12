@@ -264,6 +264,9 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 - Install specific versions if conflicts occur
 - Use virtual environment
 
+## Live Demo
+-https://citizen-ai.onrender.com/
+
 ## License
 
 MIT License - see LICENSE file for details
