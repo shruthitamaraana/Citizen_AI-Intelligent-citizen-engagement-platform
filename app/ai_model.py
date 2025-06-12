@@ -16,7 +16,7 @@ class GraniteModel:
         self.model_name = "ibm-granite/granite-3.3-2b-instruct"
         self.fallback_responses = self._load_fallback_responses()
     async def load_model(self):
-        """Safely load IBM Granite model with fallback if it fails (for Render deployment)"""
+        """Safely load the IBM Granite model and use fallback on failure."""
         try:
             print("Loading IBM Granite model...")
             self.tokenizer = AutoTokenizer.from_pretrained(
@@ -38,10 +38,10 @@ class GraniteModel:
             if self.tokenizer.pad_token is None:
                 self.tokenizer.pad_token = self.tokenizer.eos_token
 
-            print(f"Model loaded successfully on {self.device}")
+            print(f"✅ Model loaded successfully on {self.device}")
 
         except Exception as e:
-            print(f"[MODEL LOAD FAILED]: {e}")
+            print(f"❌ Error loading model: {e}")
             self.model = None
             self.tokenizer = None
 
