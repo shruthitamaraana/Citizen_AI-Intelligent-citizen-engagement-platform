@@ -15,6 +15,36 @@ class GraniteModel:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model_name = "ibm-granite/granite-3.3-2b-instruct"
         self.fallback_responses = self._load_fallback_responses()
+    async def load_model(self):
+        """Safely load IBM Granite model with fallback if it fails (for Render deployment)"""
+        try:
+            print("Loading IBM Granite model...")
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                self.model_name,
+                trust_remote_code=True
+            )
+
+            self.model = AutoModelForCausalLM.from_pretrained(
+                self.model_name,
+                torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
+                device_map="auto" if self.device == "cuda" else None,
+                trust_remote_code=True,
+                low_cpu_mem_usage=True
+            )
+
+            if self.device == "cpu":
+                self.model = self.model.to(self.device)
+
+            if self.tokenizer.pad_token is None:
+                self.tokenizer.pad_token = self.tokenizer.eos_token
+
+            print(f"Model loaded successfully on {self.device}")
+
+        except Exception as e:
+            print(f"[MODEL LOAD FAILED]: {e}")
+            self.model = None
+            self.tokenizer = None
+
         
     def _load_fallback_responses(self) -> Dict[str, str]:
         """Load fallback responses from JSON file or use built-in responses"""
