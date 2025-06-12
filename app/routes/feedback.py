@@ -47,7 +47,11 @@ async def analyze_feedback_sentiment(request: Request, text: str):
     """API endpoint for sentiment analysis"""
     try:
         granite_model = request.app.state.granite_model
-        sentiment = await granite_model.analyze_sentiment(text)
+        if granite_model.model is None:
+            sentiment = granite_model._enhanced_keyword_sentiment(text)  # direct fallback
+        else:
+            sentiment = await granite_model.analyze_sentiment(text)
+
         
         return JSONResponse({
             "text": text,
