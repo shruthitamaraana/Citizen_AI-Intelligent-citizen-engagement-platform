@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Citizen AI Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
+                <div class="d-flex align-items-center">
+                    <span class="me-3">Welcome, {{ user }}</span>
+                    <a href="/auth/logout" class="btn btn-outline-danger btn-sm">
+                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ data.total_chats }}</h4>
+                            <p class="mb-0">Total Conversations</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-comments fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ data.total_feedback }}</h4>
+                            <p class="mb-0">Feedback Received</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-comment-dots fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ data.total_concerns }}</h4>
+                            <p class="mb-0">Concerns Reported</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ data.sentiment_stats.get('Positive', 0) }}%</h4>
+                            <p class="mb-0">Positive Sentiment</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-smile fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Sentiment Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="sentimentChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Concern Categories</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Row -->
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Feedback</h5>
+                </div>
+                <div class="card-body">
+                    {% if data.recent_feedback %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Feedback</th>
+                                        <th>Sentiment</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for feedback in data.recent_feedback %}
+                                    <tr>
+                                        <td>{{ feedback.text[:50] }}...</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if feedback.sentiment == 'Positive' %}bg-success
+                                                {% elif feedback.sentiment == 'Negative' %}bg-danger
+                                                {% else %}bg-warning{% endif %}">
+                                                {{ feedback.sentiment }}
+                                            </span>
+                                        </td>
+                                        <td>{{ feedback.timestamp[:10] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No feedback data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Concerns</h5>
+                </div>
+                <div class="card-body">
+                    {% if data.recent_concerns %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for concern in data.recent_concerns %}
+                                    <tr>
+                                        <td>{{ concern.title[:30] }}...</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if concern.priority == 'Critical' %}bg-danger
+                                                {% elif concern.priority == 'High' %}bg-warning
+                                                {% elif concern.priority == 'Medium' %}bg-info
+                                                {% else %}bg-success{% endif %}">
+                                                {{ concern.priority }}
+                                            </span>
+                                        </td>
+                                        <td>{{ concern.status }}</td>
+                                        <td>{{ concern.timestamp[:10] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No concerns reported yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Sentiment Chart
+const sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
+const sentimentData = JSON.parse('{{ data.sentiment_stats | tojson }}');
+
+new Chart(sentimentCtx, {
+    type: 'doughnut',
+    data: {
+        labels: Object.keys(sentimentData),
+        datasets: [{
+            data: Object.values(sentimentData),
+            backgroundColor: [
+                '#28a745', // Positive - Green
+                '#ffc107', // Neutral - Yellow
+                '#dc3545'  // Negative - Red
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+// Category Chart
+const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+const categoryData = JSON.parse('{{ data.concern_categories | tojson }}');
+new Chart(categoryCtx, {
+    type: 'bar',
+    data: {
+        labels: Object.keys(categoryData),
+        datasets: [{
+            label: 'Number of Concerns',
+            data: Object.values(categoryData),
+            backgroundColor: '#007bff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Auto-refresh data every 30 seconds
+setInterval(async () => {
+    try {
+        const response = await fetch('/dashboard/analytics');
+        if (response.ok) {
+            // Could update charts here with new data
+            console.log('Dashboard refreshed');
+        }
+    } catch (error) {
+        console.log('Refresh error:', error);
+    }
+}, 30000);
+</script>
+{% endblock %}

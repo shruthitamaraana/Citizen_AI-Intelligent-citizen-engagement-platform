@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Citizen AI Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8 text-center">
+            <div class="hero-section">
+                <h1 class="display-4 fw-bold text-primary mb-3">
+                    <i class="fas fa-robot me-3"></i>
+                    Welcome to Citizen AI
+                </h1>
+                <p class="lead mb-4">
+                    Intelligent Citizen Engagement Platform powered by IBM Granite AI
+                </p>
+                <p class="text-muted mb-4">
+                    Get instant assistance, provide feedback, and engage with government services 
+                    through our advanced AI-powered platform.
+                </p>
+                <a href="/chat/" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-comments me-2"></i>Start Chatting
+                </a>
+                <a href="/feedback/" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-comment-dots me-2"></i>Share Feedback
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center feature-card">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-robot fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">AI Assistant</h5>
+                    <p class="card-text">
+                        Get instant answers to your government service questions 24/7
+                    </p>
+                    <a href="/chat/" class="btn btn-outline-primary">Try Now</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center feature-card">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-chart-line fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">Sentiment Analysis</h5>
+                    <p class="card-text">
+                        Share your feedback and help improve government services
+                    </p>
+                    <a href="/feedback/" class="btn btn-outline-success">Give Feedback</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center feature-card">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">Report Concerns</h5>
+                    <p class="card-text">
+                        Submit issues and track their resolution status
+                    </p>
+                    <a href="/concern/" class="btn btn-outline-warning">Report Issue</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center feature-card">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-tachometer-alt fa-3x text-info"></i>
+                    </div>
+                    <h5 class="card-title">Admin Dashboard</h5>
+                    <p class="card-text">
+                        Monitor citizen engagement and service analytics
+                    </p>
+                    <a href="/auth/login" class="btn btn-outline-info">Admin Access</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card stats-section">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Platform Statistics</h3>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h4 class="text-primary" id="chat-count">0</h4>
+                                <p>AI Conversations</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h4 class="text-success" id="feedback-count">0</h4>
+                                <p>Feedback Received</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h4 class="text-warning" id="concern-count">0</h4>
+                                <p>Concerns Reported</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h4 class="text-info">24/7</h4>
+                                <p>Service Availability</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="row">
+        <div class="col-12">
+            <h3 class="text-center mb-4">How It Works</h3>
+            <div class="row">
+                <div class="col-md-4 text-center mb-4">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <h5>Ask Questions</h5>
+                        <p>Use our AI chat assistant to get instant answers about government services</p>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center mb-4">
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <h5>Share Feedback</h5>
+                        <p>Provide feedback about your experience to help improve services</p>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center mb-4">
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <h5>Track Progress</h5>
+                        <p>Monitor the status of your concerns and see how they're being addressed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load platform statistics
+async function loadStats() {
+    try {
+        const response = await fetch('/dashboard/analytics');
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('chat-count').textContent = data.total_interactions || 0;
+            document.getElementById('feedback-count').textContent = data.weekly_feedback_count || 0;
+            document.getElementById('concern-count').textContent = Object.values(data.concern_categories || {}).reduce((a, b) => a + b, 0);
+        }
+    } catch (error) {
+        console.log('Stats not available');
+    }
+}
+
+// Load stats when page loads
+document.addEventListener('DOMContentLoaded', loadStats);
+</script>
+{% endblock %}
